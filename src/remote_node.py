@@ -31,6 +31,8 @@ class RemoteNode:
         worker_thread.daemon = True
         worker_thread.start()
 
+        self.adaptor.adapt()
+
 
 if __name__ == "__main__":
     RemoteNode().run()

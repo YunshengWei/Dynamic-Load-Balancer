@@ -1,13 +1,17 @@
 import time
+import logging
 
 
 def worker(job_queue, adaptor, completed_queue):
+    logging.info("Worker thread running ...")
+
     while True:
         job = job_queue.get(True)
 
         start_time = time.time()
         job.compute()
         completed_queue.put(job)
+        job_queue.task_done()
         processing_time = time.time() - start_time
 
         cpu_throttling_value = adaptor.get_cpu_throttling()

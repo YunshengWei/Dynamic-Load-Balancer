@@ -28,36 +28,38 @@ class LocalNode:
         self.hardware_monitor = HardwareMonitor()
         self.transfer_manager = TransferManager("HTTP://%s:%s/" % (REMOTE_HOST, TRANSFER_MANAGER_PORT),
                                                 self.job_queue, self.completed_queue)
-
-        self.transfer_manager.give_task()
+        self.adaptor = Adaptor(self.state_manager, self.hardware_monitor,
+                               self.transfer_manager, vanilla_transfer_policy)
 
         self._bootstrap()
         self._process()
         self._aggregate()
 
     def _bootstrap(self):
+        logging.info("Bootstrap phase started ...")
+
         my_workload, your_workload = self.workload.halve()
         self.transfer_manager.give_task(pickle.dumps(your_workload))
 
         for job in my_workload.split_into_jobs(NUM_CHUNK):
             self.job_queue.put(job)
 
-        logging.info("Bootstrap phase finished")
+        logging.info("Bootstrap phase finished ...")
 
     def _process(self):
-        self.adaptor = Adaptor(self.state_manager, self.hardware_monitor,
-                               self.transfer_manager, vanilla_transfer_policy())
+        logging.info("Processing phase started ...")
 
         worker_thread = threading.Thread(target=worker,
                                          args=(self.job_queue, self.adaptor, self.completed_queue))
         worker_thread.daemon = True
         worker_thread.start()
+        self.adaptor.adapt()
 
-
-        # Add a barrier for processing phase
-        logging.info("Processing phase finished")
+        logging.info("Processing phase finished ...")
 
     def _aggregate(self):
+        logging.info("Aggregation phase started ...")
+
         remote_results = pickle.loads(self.transfer_manager.fetch_result())
 
         while not self.completed_queue.empty():
@@ -69,8 +71,7 @@ class LocalNode:
         with open(RESULT_OUTPUT_FILE, 'w') as f:
             json.dump(self.workload.vector, f)
 
-        logging.info("Aggregation phase finished")
-
+        logging.info("Aggregation phase finished ...")
 
 
 if __name__ == "__main__":

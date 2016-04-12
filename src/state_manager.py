@@ -1,5 +1,6 @@
 import threading
 import socket
+import logging
 import cPickle as pickle
 from constant import *
 
@@ -31,4 +32,5 @@ class StateManager:
         while True:
             state = self.state_socket.recv(MAX_MSG_LENGTH)
             state = pickle.loads(state)
+            logging.debug("Receive remote state: %s" % state)
             self.update_remote_system_state(state)

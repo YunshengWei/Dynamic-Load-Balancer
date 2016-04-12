@@ -20,9 +20,10 @@ class HardwareMonitor:
         with self.lock:
             self.cpu_throttling = cpu_throttling
 
-    def get_hardware_info(self):
-        #todo
-        pass
+    @staticmethod
+    def get_hardware_info():
+        cpu_time = psutil.cpu_times()
+        return {"cpu_utilization": (cpu_time.user + cpu_time.system) / cpu_time.idle}
 
     def stdin_interface(self):
         while True:
