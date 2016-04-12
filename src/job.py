@@ -25,6 +25,9 @@ class VectorAdditionTask:
             start = end
         return jobs
 
+    def fill_in_result(self, job):
+        self.vector[job.start - self.start:job.end - self.start] = job.vector
+
     def serialize(self):
         length = struct.pack("!I", self.length * 8 + 8)
         start = struct.pack("!I", self.start)
