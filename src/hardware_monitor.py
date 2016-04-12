@@ -29,9 +29,9 @@ class HardwareMonitor:
         while True:
             line = sys.stdin.readline().strip()
             if line.startswith("get"):
-                print "Current cpu throttling value is %.2f%%" % self.get_cpu_throttling() * 100
+                print "Current cpu throttling value is %.2f%%" % (self.get_cpu_throttling() * 100)
             elif line.startswith("set"):
                 value = float(line[3:])
                 self.set_cpu_throttling(value)
-                logging.info("Set cpu throttling value to %.2f%%" % value * 100)
+                logging.info("Set cpu throttling value to %.2f%%" % (value * 100))
 

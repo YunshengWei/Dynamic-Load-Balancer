@@ -24,7 +24,7 @@ class LocalNode:
         self.completed_queue = Queue.Queue()
 
     def execute(self):
-        self.state_manager = StateManager((LOCAL_HOST, STATE_MANAGER_PORT))
+        self.state_manager = StateManager((REMOTE_HOST, STATE_MANAGER_PORT))
         self.hardware_monitor = HardwareMonitor()
         self.transfer_manager = TransferManager("HTTP://%s:%s/" % (REMOTE_HOST, TRANSFER_MANAGER_PORT),
                                                 self.job_queue, self.completed_queue)
