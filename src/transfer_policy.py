@@ -2,4 +2,4 @@
 
 def vanilla_transfer_policy(remote_state, hw_info, queue_len):
     #return one of ["None", "Request", "Transfer"]
-    return "None"
+    return "None", None

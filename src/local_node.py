@@ -39,7 +39,7 @@ class LocalNode:
         logging.info("Bootstrap phase started ...")
 
         my_workload, your_workload = self.workload.halve()
-        self.transfer_manager.give_task(pickle.dumps(your_workload))
+        self.transfer_manager.transfer_workload(your_workload)
 
         for job in my_workload.split_into_jobs(NUM_CHUNK):
             self.job_queue.put(job)
@@ -60,7 +60,7 @@ class LocalNode:
     def _aggregate(self):
         logging.info("Aggregation phase started ...")
 
-        remote_results = pickle.loads(self.transfer_manager.fetch_result())
+        remote_results = pickle.loads(self.transfer_manager.collect_results())
 
         while not self.completed_queue.empty():
             result = self.completed_queue.get_nowait()
@@ -75,4 +75,6 @@ class LocalNode:
 
 
 if __name__ == "__main__":
+    logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
+                        datefmt="%a, %d %b %Y %H:%M:%S")
     LocalNode(VectorAdditionTask()).execute()

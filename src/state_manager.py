@@ -9,6 +9,7 @@ class StateManager:
     def __init__(self, dest):
         self.dest = dest
         self.state_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
+        self.state_socket.bind(('', STATE_MANAGER_PORT))
         # lock for updating and retrieving remote system state
         self.lock = threading.Lock()
         self.remote_state = None

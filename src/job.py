@@ -3,11 +3,11 @@ import struct
 
 
 class VectorAdditionTask:
-    def __init__(self, length=1024*1024*4, start=0, initialized=True):
+    #def __init__(self, length=1024*1024*4, start=0, initialized=True):
+    def __init__(self, length=1024*1024*4, start=0):
         self.length = length
         self.start = start
-        if initialized:
-            self.vector = [1.111111] * length
+        self.vector = [1.111111] * length
 
     def halve(self):
         left, right = int(ceil(self.length / 2.0)), int(floor(self.length / 2.0))
@@ -18,10 +18,10 @@ class VectorAdditionTask:
         for i in xrange(self.length % num_job):
             job_sizes[i] += 1
 
-        jobs, start = [], self.start
+        jobs, start = [], 0
         for job_size in job_sizes:
             end = start + job_size
-            jobs.append(VectorAdditionJob(start, end, self.vector[start:end]))
+            jobs.append(VectorAdditionJob(start + self.start, end + self.start, self.vector[start:end]))
             start = end
         return jobs
 

@@ -53,6 +53,13 @@ class TransferManager:
             self.job_queue.put(job)
             logging.info("Receive job [%s, %s)" % (job.start, job.end))
 
+    def transfer_workload(self, workload):
+        task = pickle.dumps(workload)
+        self.proxy.give_task(task)
+
+    def collect_results(self):
+        return self.proxy.fetch_results()
+
     def get_jobqueue_size(self):
         return self.job_queue.qsize()
 
