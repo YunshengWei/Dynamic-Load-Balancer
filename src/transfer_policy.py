@@ -1,6 +1,8 @@
 from math import ceil, floor
 
 DIFF_THRES = 10
+SENDER_QUEUE_THRES = 20
+RECEIVER_QUEUE_THRES = 30
 
 
 """Make sure every transfer policy's decision is "None" when both queues are empty"""
@@ -11,8 +13,6 @@ def vanilla_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling):
 
 
 def sender_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling):
-    SENDER_QUEUE_THRES = 20
-
     remote_queue_len = remote_state["pending_job"]
     remote_cpu_throttling = remote_state["cpu_throttling"]
     if queue_len > SENDER_QUEUE_THRES:
@@ -27,8 +27,6 @@ def sender_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throt
 
 
 def receiver_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling):
-    RECEIVER_QUEUE_THRES = 30
-
     remote_queue_len = remote_state["pending_job"]
     remote_cpu_throttling = remote_state["cpu_throttling"]
     if remote_queue_len > RECEIVER_QUEUE_THRES:

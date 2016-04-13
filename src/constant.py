@@ -17,4 +17,4 @@ NUM_CHUNK = 512
 
 RESULT_OUTPUT_FILE = "vector.json"
 
-TRANSFER_POLICY = sender_initiated_transfer_policy
+TRANSFER_POLICY = receiver_initiated_transfer_policy

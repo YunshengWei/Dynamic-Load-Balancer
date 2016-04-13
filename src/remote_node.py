@@ -2,6 +2,7 @@ import Queue
 import threading
 import time
 import logging
+import sys
 from worker_thread import worker
 from state_manager import StateManager
 from hardware_monitor import HardwareMonitor
@@ -27,6 +28,8 @@ class RemoteNode:
         self.adaptor = Adaptor(self.state_manager, self.hardware_monitor,
                                self.transfer_manager, TRANSFER_POLICY)
 
+        self.transfer_manager.bootstrap_finished.wait()
+
         worker_thread = threading.Thread(target=worker,
                                          args=(self.job_queue, self.adaptor, self.completed_queue))
         worker_thread.daemon = True
@@ -38,6 +41,7 @@ class RemoteNode:
             time.sleep(1)
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
-                        datefmt="%a, %d %b %Y %H:%M:%S")
+    # logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
+    #                    datefmt="%a, %d %b %Y %H:%M:%S")
+    logging.basicConfig(stream=sys.stdout, format="%(message)s", level=logging.INFO)
     RemoteNode().run()

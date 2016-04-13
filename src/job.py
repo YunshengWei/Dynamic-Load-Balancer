@@ -2,7 +2,8 @@ from math import ceil, floor
 import struct
 
 
-class VectorAdditionTask:
+# pickle protocol 2 requires new-style class
+class VectorAdditionTask(object):
     def __init__(self, length=1024*1024*4, start=0):
         self.length = length
         self.start = start
@@ -45,7 +46,7 @@ class VectorAdditionTask:
     #     return task
 
 
-class VectorAdditionJob:
+class VectorAdditionJob(object):
     def __init__(self, start, end, vector):
         # [start, end)
         self.start = start

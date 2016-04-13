@@ -1,6 +1,5 @@
 import time
 import threading
-import logging
 from constant import *
 
 
@@ -10,12 +9,15 @@ class Adaptor:
         self.hm = hardware_monitor
         self.tm = transfer_manager
         self.transfer_policy = transfer_policy
+        self.processing_finished = threading.Event()
 
     def adapt(self):
         state_sender = threading.Thread(target=self.send_state)
         state_sender.daemon = True
         state_sender.start()
-        self.load_balance()
+        load_balancer = threading.Thread(target=self.load_balance)
+        load_balancer.daemon = True
+        load_balancer.start()
 
     def load_balance(self):
         while True:
@@ -25,6 +27,7 @@ class Adaptor:
             if remote_state is not None:
                 if remote_state["pending_job"] == 0 and my_queue_size == 0:
                     self.tm.job_queue.join()
+                    self.processing_finished.set()
                     return
                 else:
                     transfer_decision, transfer_size = self.transfer_policy(
@@ -37,6 +40,8 @@ class Adaptor:
                     elif transfer_decision is "Request":
                         for _ in xrange(transfer_size):
                             self.tm.request_load()
+
+            time.sleep(ADAPTOR_PERIOD)
 
     def send_state(self):
         while True:

@@ -2,7 +2,7 @@ import threading
 import json
 import logging
 import Queue
-import cPickle as pickle
+import sys
 from job import VectorAdditionTask, VectorAdditionJob
 from worker_thread import worker
 from state_manager import StateManager
@@ -54,12 +54,13 @@ class LocalNode:
         worker_thread.start()
         self.adaptor.adapt()
 
+        self.adaptor.processing_finished.wait()
         logging.info("Processing phase finished ...")
 
     def _aggregate(self):
         logging.info("Aggregation phase started ...")
 
-        remote_results = pickle.loads(self.transfer_manager.collect_results())
+        remote_results = self.transfer_manager.collect_results()
 
         while not self.completed_queue.empty():
             result = self.completed_queue.get_nowait()
@@ -74,6 +75,7 @@ class LocalNode:
 
 
 if __name__ == "__main__":
-    logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
-                        datefmt="%a, %d %b %Y %H:%M:%S")
+    #logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
+    #                    datefmt="%a, %d %b %Y %H:%M:%S")
+    logging.basicConfig(stream=sys.stdout, format="%(message)s", level=logging.INFO)
     LocalNode(VectorAdditionTask()).execute()
