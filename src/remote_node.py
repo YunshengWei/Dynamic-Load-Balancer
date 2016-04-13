@@ -1,5 +1,6 @@
 import Queue
 import threading
+import time
 import logging
 from worker_thread import worker
 from state_manager import StateManager
@@ -7,7 +8,6 @@ from hardware_monitor import HardwareMonitor
 from transfer_manager import TransferManager
 from adaptor import Adaptor
 from constant import *
-from transfer_policy import *
 
 
 class RemoteNode:
@@ -25,7 +25,7 @@ class RemoteNode:
         self.transfer_manager = TransferManager("HTTP://%s:%s/" % (LOCAL_HOST, TRANSFER_MANAGER_PORT),
                                                 self.job_queue, self.completed_queue)
         self.adaptor = Adaptor(self.state_manager, self.hardware_monitor,
-                               self.transfer_manager, vanilla_transfer_policy)
+                               self.transfer_manager, TRANSFER_POLICY)
 
         worker_thread = threading.Thread(target=worker,
                                          args=(self.job_queue, self.adaptor, self.completed_queue))
@@ -34,6 +34,8 @@ class RemoteNode:
 
         self.adaptor.adapt()
 
+        while True:
+            time.sleep(1)
 
 if __name__ == "__main__":
     logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,

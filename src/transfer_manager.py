@@ -7,17 +7,6 @@ from SimpleXMLRPCServer import SimpleXMLRPCServer
 from constant import *
 
 
-# def receive_a_job(data_conn):
-#     buf = ""
-#     while len(buf) < 4:
-#         buf += data_conn.recv(4 - len(buf))
-#     length = struct.unpack("!I", buf)
-#
-#     while len(buf) < length:
-#         buf += data_conn.recv(length - len(buf))
-#     return VectorAdditionJob.deserialize(buf)
-
-
 class TransferManager:
     def __init__(self, remote_uri, job_queue, completed_queue):
         self.job_queue = job_queue
@@ -41,7 +30,7 @@ class TransferManager:
     def transfer_load(self):
         try:
             job = self.job_queue.get(False)
-            logging.info("Transfer job [%s, %s)" % (job.start, job.end))
+            logging.info("Transfer job [%s, %s), queue size: %s" % (job.start, job.end, self.job_queue.qsize()))
             self.proxy.give_job(pickle.dumps(job))
             self.job_queue.task_done()
         except Queue.Empty as e:
@@ -51,7 +40,7 @@ class TransferManager:
         job = self.proxy.fetch_job()
         if job is not None:
             self.job_queue.put(job)
-            logging.info("Receive job [%s, %s)" % (job.start, job.end))
+            logging.info("Receive job [%s, %s), queue size: %s" % (job.start, job.end, self.job_queue.qsize()))
 
     def transfer_workload(self, workload):
         task = pickle.dumps(workload)
@@ -63,32 +52,18 @@ class TransferManager:
     def get_jobqueue_size(self):
         return self.job_queue.qsize()
 
-    # def load_transfer(self):
-    #     try:
-    #         job = self.job_queue.get(False)
-    #         self.data_conn.sendall(job.serialize())
-    #         logging.info("Transfer job [%s, %s]" % (job.start, job.end))
-    #     except Queue.Empty as e:
-    #         logging.debug("Error during load transfer: job queue is empty")
-
-    # def job_receiver(self):
-    #     while True:
-    #         job = receive_a_job(self.data_conn)
-    #         logging.info("Receive job [%s, %s)" % (job.start, job.end))
-    #         self.job_queue.put(job)
-
     def fetch_job(self):
         try:
             job = self.job_queue.get(False)
             self.job_queue.task_done()
-            logging.info("Transfer job [%s, %s)" % (job.start, job.end))
+            logging.info("Transfer job [%s, %s), queue size: %s" % (job.start, job.end, self.job_queue.qsize()))
             return pickle.dumps(job)
         except Queue.Empty as e:
             logging.debug("Error during load transfer: job queue is empty")
 
     def give_job(self, job):
         job = pickle.loads(job)
-        logging.info("Receive job [%s, %s)" % (job.start, job.end))
+        logging.info("Receive job [%s, %s), queue size: %s" % (job.start, job.end, self.job_queue.qsize()))
         self.job_queue.put(job)
 
     def give_task(self, task):

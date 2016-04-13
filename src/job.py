@@ -3,7 +3,6 @@ import struct
 
 
 class VectorAdditionTask:
-    #def __init__(self, length=1024*1024*4, start=0, initialized=True):
     def __init__(self, length=1024*1024*4, start=0):
         self.length = length
         self.start = start
