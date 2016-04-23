@@ -14,10 +14,9 @@ class TransferManager:
         self.proxy = xmlrpclib.ServerProxy(remote_uri)
         self._set_up_rpc()
         self.bootstrap_finished = threading.Event()
-        self.aggregation_finished = threading.Event()
 
     def _set_up_rpc(self):
-        server = SimpleXMLRPCServer(("", TRANSFER_MANAGER_PORT), allow_none=True)
+        server = SimpleXMLRPCServer(("", TRANSFER_MANAGER_PORT), allow_none=True, logRequests=False)
         logging.info("Transfer manager listening on port %s..." % TRANSFER_MANAGER_PORT)
 
         server.register_function(self.give_task, "give_task")

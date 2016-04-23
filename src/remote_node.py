@@ -40,6 +40,7 @@ class RemoteNode:
         while True:
             time.sleep(1)
 
+
 if __name__ == "__main__":
     # logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
     #                    datefmt="%a, %d %b %Y %H:%M:%S")

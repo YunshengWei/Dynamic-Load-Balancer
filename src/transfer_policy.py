@@ -41,4 +41,13 @@ def receiver_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_thr
 
 
 def symmetric_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling):
-    pass
+    decision, size = sender_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling)
+    if decision != "None":
+        return decision, size / 2
+    else:
+        decision, size = receiver_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling)
+        if decision != "None":
+            return decision, size / 2
+        else:
+            return "None", 0
+
