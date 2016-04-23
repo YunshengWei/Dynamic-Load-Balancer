@@ -10,10 +10,11 @@ class StateManager:
         self.dest = dest
         self.state_socket = socket.socket(socket.AF_INET, socket.SOCK_DGRAM)
         self.state_socket.bind(('', STATE_MANAGER_PORT))
-        # lock for updating and retrieving remote system state
+        # lock for getting and setting peer system state
         self.lock = threading.Lock()
         self.remote_state = None
 
+        # daemon thread for updating peer system state
         receiver_thread = threading.Thread(target=self._receive_state)
         receiver_thread.daemon = True
         receiver_thread.start()

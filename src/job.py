@@ -2,7 +2,8 @@ from math import ceil, floor
 import struct
 
 
-# pickle protocol 2 requires new-style class
+# pickle protocol 2 requires new-style class.
+# use protocol 2 because the space saving is huge in our case (around 50%)
 class VectorAdditionTask(object):
     def __init__(self, length=1024*1024*4, start=0):
         self.length = length

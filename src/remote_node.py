@@ -28,6 +28,7 @@ class RemoteNode:
         self.adaptor = Adaptor(self.state_manager, self.hardware_monitor,
                                self.transfer_manager, TRANSFER_POLICY)
 
+        # remote node won't start processing phase until bootstrap phase finishes
         self.transfer_manager.bootstrap_finished.wait()
 
         worker_thread = threading.Thread(target=worker,

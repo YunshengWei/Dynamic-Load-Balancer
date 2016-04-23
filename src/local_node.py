@@ -19,6 +19,8 @@ class LocalNode:
         self.hardware_monitor = None
         self.transfer_manager = None
         self.adaptor = None
+        # use the built-in Queue data structure for thread-safe purpose,
+        # and can be easily extended to cases with multiple worker threads
         self.job_queue = Queue.Queue()
         self.completed_queue = Queue.Queue()
 
@@ -54,6 +56,7 @@ class LocalNode:
         worker_thread.start()
         self.adaptor.adapt()
 
+        # set a barrier for processing phase
         self.adaptor.processing_finished.wait()
         logging.info("Processing phase finished ...")
 

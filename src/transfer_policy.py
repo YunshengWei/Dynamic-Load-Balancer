@@ -1,14 +1,16 @@
 from math import ceil, floor
 
+# the following parameters are relevant to stability
+# initiate transfer only if the difference between estimated completion time exceeds the threshold
 DIFF_THRES = 10
+# sender will initiate transfer only if its job queue length exceeds the threshold
 SENDER_QUEUE_THRES = 20
+# receiver will initiate transfer only if peer's job queue length exceeds the threshold
 RECEIVER_QUEUE_THRES = 30
 
 
-"""Make sure every transfer policy's decision is "None" when both queues are empty"""
-
 def vanilla_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling):
-    #return one of ["None", "Request", "Transfer"]
+    # return one of ["None", "Request", "Transfer"]
     return "None", 0
 
 
@@ -43,11 +45,13 @@ def receiver_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_thr
 def symmetric_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling):
     decision, size = sender_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling)
     if decision != "None":
-        return decision, size / 2
+        # return size/2 because we know the other side will request the other half
+        return "Transfer", size / 2
     else:
         decision, size = receiver_initiated_transfer_policy(remote_state, hw_info, queue_len, cpu_throttling)
         if decision != "None":
-            return decision, size / 2
+            # return size/2 because we know the other side will transfer the other half
+            return "Request", size / 2
         else:
             return "None", 0
 

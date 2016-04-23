@@ -16,6 +16,8 @@ class TransferManager:
         self.bootstrap_finished = threading.Event()
 
     def _set_up_rpc(self):
+        # for simplicity, use RPC for transferring load
+        # In our case, it will cause one HTTP connection one RPC
         server = SimpleXMLRPCServer(("", TRANSFER_MANAGER_PORT), allow_none=True, logRequests=False)
         logging.info("Transfer manager listening on port %s..." % TRANSFER_MANAGER_PORT)
 
@@ -29,6 +31,9 @@ class TransferManager:
         rpc_server_thread.start()
 
     def transfer_load(self):
+        """
+        Transfer a job to peer node
+        """
         try:
             job = self.job_queue.get(False)
             logging.info("Transfer job [%s, %s), queue size: %s" % (job.start, job.end, self.job_queue.qsize()))
@@ -38,6 +43,9 @@ class TransferManager:
             logging.debug("Error during load transfer: job queue is empty")
 
     def request_load(self):
+        """
+        request a job from peer node
+        """
         job = self.proxy.fetch_job()
         if job is not None:
             job = pickle.loads(job.data)
@@ -45,10 +53,16 @@ class TransferManager:
             logging.info("Receive job [%s, %s), queue size: %s" % (job.start, job.end, self.job_queue.qsize()))
 
     def transfer_workload(self, workload):
+        """
+        transfer workload to peer node. the function is called by local node in bootstrap phase
+        """
         task = xmlrpclib.Binary(pickle.dumps(workload, protocol=pickle.HIGHEST_PROTOCOL))
         self.proxy.give_task(task)
 
     def collect_results(self):
+        """
+        collect results from peer node. the function is called by local node in aggregation phase
+        """
         return pickle.loads(self.proxy.fetch_results().data)
 
     def get_jobqueue_size(self):

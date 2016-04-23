@@ -8,6 +8,7 @@ class HardwareMonitor:
     def __init__(self, cpu_throttling=1.0):
         self.cpu_throttling = cpu_throttling
         self.lock = threading.Lock()
+        # a daemon thread for command line interface for getting and setting cpu throttling value
         stdin_thread = threading.Thread(target=self.stdin_interface)
         stdin_thread.daemon = True
         stdin_thread.start()
@@ -29,6 +30,7 @@ class HardwareMonitor:
         while True:
             line = sys.stdin.readline().strip()
             if line.startswith("get"):
+                # this should not be a part of log, so use 'print' here
                 print "Current cpu throttling value is %.2f%%" % (self.get_cpu_throttling() * 100)
             elif line.startswith("set"):
                 value = float(line[3:])
