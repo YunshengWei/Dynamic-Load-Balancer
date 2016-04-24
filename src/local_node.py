@@ -3,6 +3,7 @@ import json
 import logging
 import Queue
 import sys
+import time
 from job import VectorAdditionTask, VectorAdditionJob
 from worker_thread import worker
 from state_manager import StateManager
@@ -14,6 +15,7 @@ from constant import *
 
 class LocalNode:
     def __init__(self, workload):
+        self.tick = time.time()
         self.workload = workload
         self.state_manager = None
         self.hardware_monitor = None
@@ -35,6 +37,8 @@ class LocalNode:
         self._bootstrap()
         self._process()
         self._aggregate()
+        self.tock = time.time()
+        logging.info("Run time: %d" % (self.tock - self.tick))
 
     def _bootstrap(self):
         logging.info("Bootstrap phase started ...")
@@ -80,5 +84,5 @@ class LocalNode:
 if __name__ == "__main__":
     #logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
     #                    datefmt="%a, %d %b %Y %H:%M:%S")
-    logging.basicConfig(stream=sys.stdout, format="%(message)s", level=logging.INFO)
+    logging.basicConfig(filename='log', filemode='w', format="%(message)s", level=logging.INFO)
     LocalNode(VectorAdditionTask()).execute()

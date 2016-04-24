@@ -45,5 +45,5 @@ class RemoteNode:
 if __name__ == "__main__":
     # logging.basicConfig(format="%(asctime)s - %(message)s", level=logging.INFO,
     #                    datefmt="%a, %d %b %Y %H:%M:%S")
-    logging.basicConfig(stream=sys.stdout, format="%(message)s", level=logging.INFO)
+    logging.basicConfig(filename='log', filemode='w', format="%(message)s", level=logging.INFO)
     RemoteNode().run()
